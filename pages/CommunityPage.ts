@@ -1,8 +1,15 @@
-import { Page, Locator } from '@playwright/test';
+import { Page, Locator, TestInfo } from '@playwright/test';
 
 export class CommunityPage {
+ //private projectName: string;
 
-  // Locators
+  constructor(private page: Page, private projectName: string) 
+  //constructor(private page: Page, projectName: string) 
+  {
+    this.projectName = projectName;
+  }
+
+  // --- Locators ---
   get searchTextBox(): Locator {
     return this.page.locator('[data-testid="member-search"]');
   }
@@ -15,32 +22,41 @@ export class CommunityPage {
     return this.page.locator('[role="option"][data-slot="select-item"]');
   }
 
-  // Locator for all table rows
+  // Adaptive table locator
   get tableRows(): Locator {
-    return this.page.locator(
-      '[data-slot="table-body"] > tr'
-    );
+    if (this.isMobile()) {
+      // Mobile layout
+      return this.page.locator('[data-testid="members-table-mobile"] > div[data-slot="card"]');
+    } else {
+      // Desktop layout
+      return this.page.locator('[data-slot="table-body"] > tr');
+    }
   }
 
-  constructor(private page: Page) {}
+  // --- Utility ---
+  private isMobile(): boolean {
+    return this.projectName.toLowerCase().includes('mobile');
+  }
 
-  // Navigate to main page
+  // --- Actions ---
   async goto() {
     await this.page.goto('https://v0-cmlookup2.vercel.app');
-    
+    await this.page.waitForLoadState('networkidle');
   }
 
   async waitForTable() {
-  await this.page.locator('[data-slot="table-body"]').waitFor({ state: 'visible', timeout: 5000 });
-}
+    if (this.isMobile()) {
+      await this.page.locator('[data-testid="members-table-mobile"] > div[data-slot="card"]').first().waitFor({ state: 'visible', timeout: 5000 });
+    } else {
+      await this.page.locator('[data-slot="table-body"]').waitFor({ state: 'visible', timeout: 5000 });
+    }
+  }
 
-async openCommunityMemberLookup() {
-  await this.page.goto('https://v0-cmlookup2.vercel.app');
-  await this.page.waitForLoadState('networkidle');
-  await this.waitForTable();
-}
+  async openCommunityMemberLookup() {
+    await this.goto();
+    await this.waitForTable();
+  }
 
-  // Select a status from the dropdown
   async selectStatus(status: string) {
     await this.statusFilter.click();
     const option = this.statusFilterOptions.filter({ hasText: status });
@@ -49,7 +65,6 @@ async openCommunityMemberLookup() {
     await this.page.waitForLoadState('networkidle');
   }
 
-  // Search by name or email
   async searchByNameEmailId(text: string) {
     await this.searchTextBox.fill(text);
     await this.page.keyboard.press('Enter');
@@ -57,37 +72,36 @@ async openCommunityMemberLookup() {
     await this.page.waitForLoadState('networkidle');
   }
 
-  
-// Get the count of visible members
-async getVisibleCount(): Promise<number> {
-  return await this.tableRows.count();
+  // --- Get counts ---
+  async getVisibleCount(): Promise<number> {
+    return await this.tableRows.count();
+  }
+
+  async getStatusFilteredMembersCount(status: string): Promise<number> {
+    const filtered = this.tableRows.filter({
+      has: this.page.locator('span[data-slot="badge"]', { hasText: status })
+    });
+    return await filtered.count();
+  }
+
+  async getMemberCountByName(name: string): Promise<number> {
+    const filtered = this.tableRows.filter({
+      has: this.page.locator('h3.font-medium', { hasText: name })
+    });
+    return await filtered.count();
+  }
+
+  async getTotalRowsCount(): Promise<number> {
+    return await this.tableRows.count();
+  }
+
+  async getMemberCountByText(text: string): Promise<number> {
+    const filtered = this.tableRows.filter({
+      has: this.page.locator('a.block', { hasText: text })
+    });
+    return await filtered.count();
+  }
 }
 
-// Get the count of members with status filtered
-async getStatusFilteredMembersCount(status: string): Promise<number> {
-  const activeRows = this.tableRows.filter({
-    has: this.page.locator('span[data-slot="badge"]', { hasText: status})
-  });
-  return await activeRows.count();
-}
 
 
-// Count rows containing a specific member name
-async getMemberCountByName(name: string): Promise<number> {
-  const matchingRows = this.tableRows.filter({
-    has: this.page.locator('h3[class="font-medium"]', { hasText: name })
-  });
-  return await matchingRows.count();
-}
-
-async getTotalRowsCount(): Promise<number> {
-  return await this.tableRows.count();
-}
-
-async getMemeberCountByText(text: string): Promise<number> {
-    const matchingRows = this.tableRows.filter({
-    has: this.page.locator('a.block', { hasText: text })
-  });
-  return await matchingRows.count();
-}
-}
