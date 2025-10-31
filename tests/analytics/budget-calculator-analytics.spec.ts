@@ -1,20 +1,20 @@
 import { test } from '../../fixtures/bypassCookies';
+import { BudgetCalculatorPage } from '../../pages/BudgetCalculatorPage';
 import { verifyAnalyticsEvent, captureSegmentEvents } from '../../utils/analyticsHelper';
 
 test.describe('Budget Calculator Analytics', () => {
   test.only('should capture all relevant analytics events', async ({ page }) => {
-    // Array to store all captured Segment events
-      // Start capturing analytics
+    const budgetPage = new BudgetCalculatorPage(page);
+
+    // 1️⃣ Start capturing analytics
     const analyticsEvents = await captureSegmentEvents(page);
 
     // 2️⃣ Navigate to calculators page
-    await page.goto('https://www.earnin.com/financial-calculators');
+    await budgetPage.goto();
 
-    // 3️⃣ Click the Budget Calculator card
-    await page.locator('div[data-testid^="financial-calculator-"]:has-text("Budget calculator")').click();
-
-    // Give Segment some time to send events
-    await page.waitForTimeout(1000);
+    // 3️⃣ Click Budget Calculator card
+    await budgetPage.clickBudgetCalculatorCard();
+    await page.waitForTimeout(1000); // wait for analytics
 
     // 4️⃣ Verify "User viewed screen" event
     const viewedScreenEvent = analyticsEvents.find(
@@ -24,10 +24,8 @@ test.describe('Budget Calculator Analytics', () => {
       'properties.screenName': 'Budget Calculator',
     });
 
-    // 5️⃣ Fill income field
-    await page.fill('input[data-testid="income"]', '9000');
-
-    // Wait for analytics
+    // 5️⃣ Fill income and verify analytics
+    await budgetPage.fillIncome('9000');
     await page.waitForTimeout(500);
 
     const interactedIncomeEvent = analyticsEvents.find(
@@ -40,9 +38,8 @@ test.describe('Budget Calculator Analytics', () => {
       'properties.component': 'Input Field',
     });
 
-    // 6️⃣ Fill zipcode field
-    await page.fill('input[data-testid="zipcode"]', '94040');
-
+    // 6️⃣ Fill zipcode and verify analytics
+    await budgetPage.fillZipCode('94040');
     await page.waitForTimeout(500);
 
     const interactedZipEvent = analyticsEvents.find(
@@ -55,9 +52,8 @@ test.describe('Budget Calculator Analytics', () => {
       'properties.component': 'Input Field',
     });
 
-    // 7️⃣ Click Calculate button
-    await page.getByRole('button', { name: 'Calculate' }).click();
-
+    // 7️⃣ Click Calculate and verify analytics
+    await budgetPage.clickCalculate();
     await page.waitForTimeout(1000);
 
     const interactedCalculateEvent = analyticsEvents.find(
@@ -71,7 +67,7 @@ test.describe('Budget Calculator Analytics', () => {
       'properties.screenName': 'Budget Calculator',
     });
 
-    // 8️⃣ Debug: print all captured analytics
+    // 8️⃣ Debug all captured analytics
     console.log('✅ All captured Segment events:\n', JSON.stringify(analyticsEvents, null, 2));
   });
 });
