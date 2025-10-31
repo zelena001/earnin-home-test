@@ -1,23 +1,11 @@
 import { test } from '../../fixtures/bypassCookies';
-import { verifyAnalyticsEvent } from '../../utils/analyticsHelper';
+import { verifyAnalyticsEvent, captureSegmentEvents } from '../../utils/analyticsHelper';
 
 test.describe('Budget Calculator Analytics', () => {
   test.only('should capture all relevant analytics events', async ({ page }) => {
     // Array to store all captured Segment events
-    const analyticsEvents: any[] = [];
-
-    // 1️⃣ Intercept all Segment requests and store payloads
-    page.on('request', async (req) => {
-      if (req.url().includes('https://api.segment.io/v1/t') && req.method() === 'POST') {
-        try {
-          const data = req.postDataJSON();
-          analyticsEvents.push(data);
-          console.log('📊 [Segment Event Captured] Event:', data.event);
-        } catch (err) {
-          console.warn('⚠️ Failed to parse Segment request', err);
-        }
-      }
-    });
+      // Start capturing analytics
+    const analyticsEvents = await captureSegmentEvents(page);
 
     // 2️⃣ Navigate to calculators page
     await page.goto('https://www.earnin.com/financial-calculators');

@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import {Page, expect } from '@playwright/test';
 
 /**
  * Verify analytics event structure and property correctness
@@ -37,4 +37,22 @@ export function verifyAnalyticsEvent(event: any, expected: Record<string, string
       throw err;
     }
   }
+}
+
+export async function captureSegmentEvents(page: Page) {
+  const analyticsEvents: any[] = [];
+
+  page.on('request', async (req) => {
+    if (req.url().includes('https://api.segment.io/v1/t') && req.method() === 'POST') {
+      try {
+        const data = req.postDataJSON();
+        analyticsEvents.push(data);
+        console.log('📊 [Segment Event Captured] Event:', data.event);
+      } catch (err) {
+        console.warn('⚠️ Failed to parse Segment request', err);
+      }
+    }
+  });
+
+  return analyticsEvents;
 }
