@@ -1,9 +1,0 @@
-{
-  ""filters"": {
-    ""status"": [""Active"", ""Pending""],
-    ""dateRanges"": [
-      { ""from"": ""Dec 2024"", ""to"": ""Jan 2025"" },
-      { ""from"": ""Jul 2025"", ""to"": ""Aug 2025"" }
-    ]
-  }
-}

@@ -1,0 +1,106 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - link "Back to results" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img
+      - text: Back to results
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Jennifer Brown" [level=1] [ref=e8]
+        - generic [ref=e9]:
+          - generic [ref=e10]: Suspended
+          - generic [ref=e11]: Active
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: "Email:"
+          - generic [ref=e15]: jennifer.brown@example.com
+          - generic [ref=e16]:
+            - img [ref=e17]
+            - generic [ref=e20]: Verified
+        - generic [ref=e21]:
+          - generic [ref=e22]: "Phone:"
+          - generic [ref=e23]: "5556307410"
+          - generic [ref=e24]:
+            - img [ref=e25]
+            - generic [ref=e28]: Verified
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]: "User ID:"
+          - generic [ref=e32]: "543210987"
+        - generic [ref=e33]:
+          - generic [ref=e34]: "Public GUID:"
+          - generic "9H0I1J2K-L3M4-5N6O-7P8Q-9R0S1T2U3V4W" [ref=e35]: 9H0I1J2K...1T2U3V4W
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]: "KYC:"
+          - generic [ref=e39]: KYC Verified
+        - generic [ref=e40]:
+          - generic [ref=e41]: "Cashout:"
+          - generic [ref=e42]: Completed
+        - generic [ref=e43]:
+          - generic [ref=e44]: "Account:"
+          - generic [ref=e45]: Active
+    - generic [ref=e46]:
+      - generic [ref=e47]:
+        - generic [ref=e49]: Notes
+        - paragraph [ref=e51]: No headline notes.
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - generic [ref=e54]: User State
+          - button [disabled]:
+            - img
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: Status
+            - generic [ref=e60]:
+              - generic [ref=e61]: Active
+              - button "Change" [disabled]
+          - generic [ref=e62]:
+            - generic [ref=e63]: Usage/Max
+            - generic [ref=e65]:
+              - generic [ref=e66]: $95/$150
+              - button "Update" [disabled]
+          - generic [ref=e67]:
+            - generic [ref=e68]: Homescreen State
+            - generic [ref=e70]:
+              - generic [ref=e71]: EarlyPaySuspendedScenario
+              - generic [ref=e72]:
+                - button "More" [disabled]
+                - button "Refresh" [disabled]
+          - generic [ref=e73]:
+            - generic [ref=e74]: Intercept
+            - generic [ref=e75]: EarlyPayViolation
+          - generic [ref=e76]:
+            - generic [ref=e77]: Identity Risk
+            - generic [ref=e79]: Review
+    - generic [ref=e80]:
+      - generic [ref=e82]: Account Information
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e86]: Sign Up Date
+          - generic [ref=e87]: Aug 30, 2025
+        - generic [ref=e88]:
+          - generic [ref=e89]: Early Pay Status
+          - generic [ref=e90]: Suspended
+        - generic [ref=e91]:
+          - generic [ref=e92]: Card Status
+          - generic [ref=e93]: Active
+        - generic [ref=e94]:
+          - generic [ref=e95]: KYC Status
+          - generic [ref=e96]: KYC Verified
+        - generic [ref=e97]:
+          - generic [ref=e98]: Cashout Status
+          - generic [ref=e99]: Completed
+  - generic [ref=e100]:
+    - link "Built with" [ref=e101] [cursor=pointer]:
+      - /url: https://v0.app/chat/api/open/built-with-v0/b_yrevMVrpG8A
+      - text: Built with
+      - img [ref=e102]
+    - button "Close" [ref=e105] [cursor=pointer]:
+      - img [ref=e106]
+    - generic [ref=e108]: v0
+  - alert [ref=e109]
+```

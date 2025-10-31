@@ -274,4 +274,12 @@ async getMemberCountByDateRange(fromDate: string, toDate: string): Promise<numbe
 
   return count;
 }
+
+/**
+ * Click an element that contains the given text.
+ * @param text - The visible text to click
+ */
+async clickElementByText(text: string) {
+  await this.tableRows.locator(`text=${text}`).first().click();
+}
 }

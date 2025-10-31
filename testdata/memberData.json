@@ -1,0 +1,13 @@
+{
+  "member": {
+    "Jennifer": {
+      "info": {
+        "name": "Jennifer Brown",
+        "email": "jennifer.brown@example.com",
+        "status": "Active",
+        "kycStatus": "KYC Verified",
+        "cashOutStatus": "Completed"
+      }
+    }
+  }
+}
