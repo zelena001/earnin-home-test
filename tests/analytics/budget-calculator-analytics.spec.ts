@@ -30,10 +30,13 @@ test.describe('Budget Calculator Analytics', () => {
 
     await page.goto('https://www.earnin.com/financial-calculators');
         await page.waitForTimeout(3000);
-    page.pause();
-    await page.locator('[data-testid="financial-calculator-Budget calculator-card"]').click();
 
-    await page.fill('input[data-testid="income"', '9000');
+   // await page.locator('[data-testid="financial-calculator-Budget calculator-card"]').click();
+    
+await page.locator('div[data-testid^="financial-calculator-"]:has-text("Budget calculator")').click();
+await page.pause();
+    await page.fill('input[data-testid="income"]', '9000');
+    await page.pause();
     await page.fill('input[data-testid="zipcode"]', '94040');
     await page.getByRole('button', { name: 'Calculate' }).click();
 
