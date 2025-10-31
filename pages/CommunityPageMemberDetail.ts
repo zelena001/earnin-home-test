@@ -39,6 +39,16 @@ export class CommunityPageMemberDetail {
     return this.detailHeader.nth(0).locator('h1').first();
   }
 
+  get errorMessage(): Locator {
+    return this.page.locator('p[class="text-muted-foreground mb-6"]');
+  }
+
+  get errorHeader(): Locator {
+    return this.page.locator('h2[class="text-2xl font-bold mb-4"]');
+  }
+
+
+
   // Indexes can be adjusted based on your DOM
   async memberKYCStatusText(): Promise<string> {
     return this.getStatusText(0, 1);
@@ -60,9 +70,6 @@ export class CommunityPageMemberDetail {
 
   async verifyMemberInfo(member: Member) {
     const name = (await this.memberName.waitFor({ state: 'visible' }).then(() => this.memberName.textContent()))?.trim() || '';
-    // const status = await this.memberStatusText();
-    // const kycStatus = await this.memberKYCStatusText();
-    // const cashoutStatus = await this.cashoutStatusText();
     const status = await this.getBadgeText(2);
 const kycStatus = await this.getBadgeText(0);
 const cashoutStatus = await this.getBadgeText(1);
@@ -79,6 +86,7 @@ const cashoutStatus = await this.getBadgeText(1);
 
 private async getBadgeText(divIndex: number): Promise<string> {
   const badge = this.getStatusBadge(divIndex);
+  //need to recheck if this is needed?
   await badge.waitFor({ state: 'attached', timeout: 5000 }); // use 'attached' first
   return badge.evaluate(el => el.textContent?.trim() || '');
 }
