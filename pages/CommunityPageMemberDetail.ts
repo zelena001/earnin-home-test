@@ -3,46 +3,54 @@ import { Member } from '../interfaces/communityMember';
 
 export class CommunityPageMemberDetail {
   constructor(private page: Page) {}
-  
 
   // --- Base container ---
   private get detailHeader(): Locator {
     return this.page.locator('[data-testid="detail-header"]');
   }
 
+  // Base selector for the divs containing spans
+  private statusBaseSelector = '[data-testid="detail-header"] > div.flex.flex-wrap > div';
 
-//  private statusBaseSelector = '[data-testid="detail-header"] >> div.flex.flex-wrap > div > span.inline-flex.font-medium';
-  private statusBaseSelector = '[data-testid="detail-header"] > div.flex.flex-wrap > div'
+  // --- Helper functions ---
+  /** Returns a CSS selector string for debugging in DevTools */
+  private getStatusHeaderSelectorString(divIndex: number, spanIndex: number): string {
+    return `${this.statusBaseSelector}:nth-child(${divIndex + 1}) span.inline-flex.font-medium:nth-child(${spanIndex + 1})`;
+  }
 
-// Function to get nth div and nth span
+  /** Returns a Playwright Locator for the given div and span indexes */
+  private getStatusHeaderDetail(divIndex: number, spanIndex: number): Locator {
+    console.log('Locator debug:', this.getStatusHeaderSelectorString(divIndex, spanIndex));
+    return this.page.locator(this.statusBaseSelector)
+                    .nth(divIndex)
+                    .locator('span.inline-flex.font-medium')
+                    .nth(spanIndex);
+  }
+
+  /** Returns the visible text of a status span, accounting for nested elements */
+  private async getStatusText(divIndex: number, spanIndex: number): Promise<string> {
+    const locator = this.getStatusHeaderDetail(divIndex, spanIndex);
+    await locator.waitFor({ state: 'visible', timeout: 5000 });
+    return locator.evaluate(el => el.textContent?.trim() || '');
+  }
 
   // --- Locators ---
   get memberName(): Locator {
     return this.detailHeader.nth(0).locator('h1').first();
   }
-private getStatusHeaderSelectorString(divIndex: number, spanIndex: number): string {
-  return `${this.statusBaseSelector}:nth-child(${divIndex + 1}) span:nth-child(${spanIndex + 1})`;
-}
 
+  // Indexes can be adjusted based on your DOM
+  async memberKYCStatusText(): Promise<string> {
+    return this.getStatusText(0, 1);
+  }
 
-get memberKYCStatus(): Locator {
-  // for example: divIndex=2, spanIndex=0
-  console.log
-  return this.getStatusHeaderDetail(0, 1);
-}
+  async cashoutStatusText(): Promise<string> {
+    return this.getStatusText(1, 1);
+  }
 
-get cashoutStatus(): Locator {
-  // for example: divIndex=2, spanIndex=0
-  return this.getStatusHeaderDetail(1, 1);
-}
-
-get memberStatus(): Locator {
-  
-  // for example: divIndex=2, spanIndex=0
-  console.log(this.getStatusHeaderSelectorString(2, 1));
-  return this.getStatusHeaderDetail(2, 1);
-}
-
+  async memberStatusText(): Promise<string> {
+    return this.getStatusText(2, 1);
+  }
 
   // --- Actions ---
   async goToSpecificMember(number: string) {
@@ -51,10 +59,13 @@ get memberStatus(): Locator {
   }
 
   async verifyMemberInfo(member: Member) {
-    const name = (await this.memberName.textContent())?.trim();
-    const status = (await this.memberStatus.textContent())?.trim();
-    const kycStatus = (await this.memberKYCStatus.textContent())?.trim();
-        const cashoutStatus = (await this.cashoutStatus.textContent())?.trim();
+    const name = (await this.memberName.waitFor({ state: 'visible' }).then(() => this.memberName.textContent()))?.trim() || '';
+    // const status = await this.memberStatusText();
+    // const kycStatus = await this.memberKYCStatusText();
+    // const cashoutStatus = await this.cashoutStatusText();
+    const status = await this.getBadgeText(2);
+const kycStatus = await this.getBadgeText(0);
+const cashoutStatus = await this.getBadgeText(1);
 
     expect(name).toEqual(member.name);
     expect(cashoutStatus).toEqual(member.cashOutStatus);
@@ -62,17 +73,14 @@ get memberStatus(): Locator {
     expect(kycStatus).toEqual(member.kycStatus);
   }
 
-//   private getStatusHeaderDetail(divIndex: number, spanIndex: number): Locator {
-//   return this.page.locator(this.statusBaseSelector)
-//                   .nth(divIndex)   // pick the correct div
-//                   .locator('span') // span inside the div
-//                   .nth(spanIndex); // pick the correct span
-// }
-
-private getStatusHeaderDetail(divIndex: number, spanIndex: number): Locator {
-  return this.page.locator(this.statusBaseSelector)
-                  .nth(divIndex)               // pick the correct div
-                  .locator('span.inline-flex.font-medium') // pick spans inside that div
-                  .nth(spanIndex);             // pick the correct span
+  private getStatusBadge(divIndex: number): Locator {
+  return this.page.locator(`${this.statusBaseSelector}:nth-child(${divIndex + 1}) [data-slot="badge"]`);
 }
+
+private async getBadgeText(divIndex: number): Promise<string> {
+  const badge = this.getStatusBadge(divIndex);
+  await badge.waitFor({ state: 'attached', timeout: 5000 }); // use 'attached' first
+  return badge.evaluate(el => el.textContent?.trim() || '');
+}
+
 }
