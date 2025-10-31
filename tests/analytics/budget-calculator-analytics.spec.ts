@@ -1,148 +1,89 @@
-import { test, expect } from '../../fixtures/bypassCookies';
+import { test } from '../../fixtures/bypassCookies';
 import { verifyAnalyticsEvent } from '../../utils/analyticsHelper';
 
 test.describe('Budget Calculator Analytics', () => {
-     test.only('should capture "User viewed screen" event after clicking Budget Calculator', async ({ page }) => {
-    // 1️⃣ Navigate to the calculators page
-    await page.goto('https://www.earnin.com/financial-calculators');
+  test.only('should capture all relevant analytics events', async ({ page }) => {
+    // Array to store all captured Segment events
+    const analyticsEvents: any[] = [];
 
-    // 2️⃣ Click the Budget Calculator card
-    await page.locator('div[data-testid^="financial-calculator-"]:has-text("Budget calculator")').click();
-
-    // 3️⃣ Wait for the "User viewed screen" analytics event
-    const viewedScreenRequest = await page.waitForRequest(req => {
+    // 1️⃣ Intercept all Segment requests and store payloads
+    page.on('request', async (req) => {
       if (req.url().includes('https://api.segment.io/v1/t') && req.method() === 'POST') {
         try {
           const data = req.postDataJSON();
-          return data.event === 'User viewed screen' &&
-                 data.properties?.screenName === 'Budget Calculator';
-        } catch {
-          return false;
+          analyticsEvents.push(data);
+          console.log('📊 [Segment Event Captured] Event:', data.event);
+        } catch (err) {
+          console.warn('⚠️ Failed to parse Segment request', err);
         }
       }
-      return false;
-    }, { timeout: 5000 });
+    });
 
-    // 4️⃣ Get payload and debug
-    const viewedScreenPayload = viewedScreenRequest.postDataJSON();
-    console.log('📊 User viewed screen event payload:\n', JSON.stringify(viewedScreenPayload, null, 2));
+    // 2️⃣ Navigate to calculators page
+    await page.goto('https://www.earnin.com/financial-calculators');
 
-    // 5️⃣ Verify the event properties
-    verifyAnalyticsEvent(viewedScreenPayload, {
+    // 3️⃣ Click the Budget Calculator card
+    await page.locator('div[data-testid^="financial-calculator-"]:has-text("Budget calculator")').click();
+
+    // Give Segment some time to send events
+    await page.waitForTimeout(1000);
+
+    // 4️⃣ Verify "User viewed screen" event
+    const viewedScreenEvent = analyticsEvents.find(
+      e => e.event === 'User viewed screen' && e.properties?.screenName === 'Budget Calculator'
+    );
+    verifyAnalyticsEvent(viewedScreenEvent, {
       'properties.screenName': 'Budget Calculator',
     });
 
-     // Fill income
-    // Fill income
-await page.fill('input[data-testid="income"]', '9000');
+    // 5️⃣ Fill income field
+    await page.fill('input[data-testid="income"]', '9000');
 
-// Wait for the "User interacted with element" event for Income
-const interactedIncomeRequest = await page.waitForRequest(req => {
-  if (req.url().includes('https://api.segment.io/v1/t') && req.method() === 'POST') {
-    try {
-      const data = req.postDataJSON();
-      return data.event === 'User interacted with element' &&
-             data.properties?.elementName === 'Income' &&
-             data.properties?.component === 'Input Field';
-    } catch {
-      return false;
-    }
-  }
-  return false;
-}, { timeout: 5000 });
+    // Wait for analytics
+    await page.waitForTimeout(500);
 
-// Get payload and debug
-const interactedIncomePayload = interactedIncomeRequest.postDataJSON();
-console.log('📊 User interacted with element - Income event payload:\n', JSON.stringify(interactedIncomePayload, null, 2));
+    const interactedIncomeEvent = analyticsEvents.find(
+      e => e.event === 'User interacted with element' &&
+           e.properties?.elementName === 'Income' &&
+           e.properties?.component === 'Input Field'
+    );
+    verifyAnalyticsEvent(interactedIncomeEvent, {
+      'properties.elementName': 'Income',
+      'properties.component': 'Input Field',
+    });
 
-// Verify the event properties
-verifyAnalyticsEvent(interactedIncomePayload, {
-  'properties.elementName': 'Income',
-  'properties.component': 'Input Field',
-});
+    // 6️⃣ Fill zipcode field
+    await page.fill('input[data-testid="zipcode"]', '94040');
 
+    await page.waitForTimeout(500);
 
+    const interactedZipEvent = analyticsEvents.find(
+      e => e.event === 'User interacted with element' &&
+           e.properties?.elementName === 'Zip Code' &&
+           e.properties?.component === 'Input Field'
+    );
+    verifyAnalyticsEvent(interactedZipEvent, {
+      'properties.elementName': 'Zip Code',
+      'properties.component': 'Input Field',
+    });
 
+    // 7️⃣ Click Calculate button
+    await page.getByRole('button', { name: 'Calculate' }).click();
 
+    await page.waitForTimeout(1000);
+
+    const interactedCalculateEvent = analyticsEvents.find(
+      e => e.event === 'User interacted with element' &&
+           e.properties?.elementName === 'Calculate' &&
+           e.properties?.component === 'CTA'
+    );
+    verifyAnalyticsEvent(interactedCalculateEvent, {
+      'properties.elementName': 'Calculate',
+      'properties.component': 'CTA',
+      'properties.screenName': 'Budget Calculator',
+    });
+
+    // 8️⃣ Debug: print all captured analytics
+    console.log('✅ All captured Segment events:\n', JSON.stringify(analyticsEvents, null, 2));
   });
-//   test.only('should fire analytics events with correct schema and values', async ({ page }) => {
-//     const analyticsEvents: any[] = [];
-
-//     // 1️⃣ Intercept and log Segment analytics requests
-//     page.on('request', async (req) => {
-//       if (req.url().includes('https://api.segment.io/v1/t') && req.method() === 'POST') {
-//         try {
-//           const data = req.postDataJSON();
-//           analyticsEvents.push(data);
-
-//           // Pretty-print event info for debug
-//           console.log('📊 [Segment Event Captured]');
-//           console.log(`   Event Name: ${data.event}`);
-//           console.log(`   Screen: ${data.properties?.screenName}`);
-//           console.log(`   Element: ${data.properties?.elementName}`);
-//           console.log(`   Component: ${data.properties?.component}`);
-//           console.log('──────────────────────────────');
-//         } catch (err) {
-//           console.warn('⚠️ Failed to parse Segment event:', err);
-//         }
-//       }
-//     });
-
-//     // 2️⃣ Navigate & perform actions
-//     await page.goto('https://www.earnin.com/financial-calculators');
-//     await page.waitForTimeout(2000);
-
-//     // Click the Budget calculator card
-//     await page.locator('div[data-testid^="financial-calculator-"]:has-text("Budget calculator")').click();
-
-//     // Pause for debug after card click
-//     await page.pause();
-
-//     // Fill income
-//     await page.fill('input[data-testid="income"]', '9000');
-//     await page.pause(); // Pause here for debug
-
-//     // Fill zip code
-//     await page.fill('input[data-testid="zipcode"]', '94040');
-
-//     // Click Calculate
-//     await page.getByRole('button', { name: 'Calculate' }).click();
-
-//     // Wait for analytics calls to finish
-//     await page.waitForTimeout(3000);
-
-//     // 🧾 Debug: show all captured Segment events
-//     console.log('✅ All captured Segment events:\n', JSON.stringify(analyticsEvents, null, 2));
-
-//     // 3️⃣ Assertions using nested property validation
-//     const viewedScreen = analyticsEvents.find(e => e.event === 'User viewed screen');
-//     verifyAnalyticsEvent(viewedScreen, {
-//       'properties.screenName': 'Budget Calculator',
-//     });
-
-//     const interactedIncome = analyticsEvents.find(
-//       e => e.event === 'User interacted with element' && e.properties.elementName === 'Income'
-//     );
-//     verifyAnalyticsEvent(interactedIncome, {
-//       'properties.elementName': 'Income',
-//       'properties.component': 'Input Field',
-//     });
-
-//     const interactedZip = analyticsEvents.find(
-//       e => e.event === 'User interacted with element' && e.properties.elementName === 'Zip Code'
-//     );
-//     verifyAnalyticsEvent(interactedZip, {
-//       'properties.elementName': 'Zip Code',
-//       'properties.component': 'Input Field',
-//     });
-
-//     const interactedCalculate = analyticsEvents.find(
-//       e => e.event === 'User interacted with element' && e.properties.elementName === 'Calculate'
-//     );
-//     verifyAnalyticsEvent(interactedCalculate, {
-//       'properties.elementName': 'Calculate',
-//       'properties.component': 'CTA',
-//       'properties.screenName': 'Budget Calculator',
-//     });
-//   });
 });
