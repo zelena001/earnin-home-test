@@ -24,7 +24,7 @@ await memberDetail.verifyMemberInfo(Jennifer);
  await expect(communityPageMemberDetail.errorHeader).toHaveText('Member Not Found');
 });
 
-test.only('Member detail screen should suppport dynamic error message from the back end correctly', async ({ page }) => {
+test('Member detail screen should suppport dynamic error message from the back end correctly', async ({ page }) => {
     const communityPageMemberDetail = new CommunityPageMemberDetail(page);
     await mockMemberFallbackMessages(page, '123456789', {
   "The member you're looking for doesn't exist or has been removed.": "This member is pending review by account manager. Please wait.",
