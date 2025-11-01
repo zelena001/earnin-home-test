@@ -28,10 +28,8 @@ jobs:
       - name: Run Playwright tests
         run: |
           docker run --rm \
-          -u root \
           -v ${{ github.workspace }}:/app \
           -w /app \
-          mcr.microsoft.com/playwright:v1.44.0-focal \
           npx playwright test
 
       # 3️⃣ Upload test artifacts

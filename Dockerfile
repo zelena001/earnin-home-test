@@ -17,5 +17,8 @@ COPY . .
 # 6️⃣ Optional: install Playwright browsers (already included in this image)
 # RUN npx playwright install --with-deps   <-- NOT needed
 
-# 7️⃣ Default command to run tests
+# 7️⃣ Switch to Playwright user to avoid permission issues
+USER pwuser
+
+# 8️⃣ Default command to run tests
 CMD ["npx", "playwright", "test"]
