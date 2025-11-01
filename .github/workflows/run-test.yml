@@ -18,46 +18,49 @@ on:
         default: ''
 
 jobs:
-  test:
-    name: Run Playwright Tests
+  e2e-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # 🧰 Step 1: Checkout repo
+      # 1️⃣ Checkout repo
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
+
+      # 2️⃣ Set up Docker Buildx for caching
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3️⃣ Restore Docker cache (optional, speeds up rebuilds)
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          ref: ${{ github.event.inputs.target_branch || github.ref }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
-      # 🧩 Step 2: Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # 🪄 Step 3: Install dependencies
-      - name: Install dependencies
-        run: npm ci
-
-      # 🎭 Step 4: Install Playwright browsers
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      # 🧪 Step 5: Run Playwright tests
-      - name: Run Playwright tests
+      # 4️⃣ Build Docker image with caching
+      - name: Build Docker image
         run: |
-          if [ -n "${{ github.event.inputs.test_pattern }}" ]; then
-            npx playwright test ${{ github.event.inputs.test_pattern }}
-          else
-            npx playwright test
-          fi
-        env:
-          CI: true
+          docker buildx build \
+            --cache-from=type=local,src=/tmp/.buildx-cache \
+            --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
+            -t playwright-tests .
 
-      # 📸 Step 6: Upload test results
-      - name: Upload Playwright report
+      # 5️⃣ Replace old cache with new cache
+      - name: Update Docker cache
+        run: rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      # 6️⃣ Run Playwright tests inside container
+      - name: Run Playwright tests
+        run: docker run --rm \
+              -v ${{ github.workspace }}/test-results:/app/test-results \
+              playwright-tests
+
+      # 7️⃣ Upload test artifacts
+      - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: test-results
+          path: test-results/
