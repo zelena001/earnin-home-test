@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/bypassCookies';
+import { test, expect } from '../../fixtures/calculatorFixture';
 
 test.describe('Financial Calculator Snapshot Tests', () => {
   

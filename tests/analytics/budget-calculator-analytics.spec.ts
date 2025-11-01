@@ -1,4 +1,4 @@
-import { test } from '../../fixtures/bypassCookies';
+import { test } from '../../fixtures/calculatorFixture';
 import { BudgetCalculatorPage } from '../../pages/BudgetCalculatorPage';
 import { verifyAnalyticsEvent, captureSegmentEvents } from '../../utils/analyticsHelper';
 
