@@ -155,7 +155,7 @@ export class CommunityPage {
 }
 
 async selectFromDate(targetDate: string): Promise<void> {
-  const dateLocator = this.page.locator(`[data-day="${targetDate}"]`);
+  const dateLocator = this.page.locator(`[data-testid="date-calendar"] div:nth-child(2) [data-day="${targetDate}"]`);
 
   const maxTries = 24; // safety limit (2 years)
   let tries = 0;
@@ -202,7 +202,7 @@ async forceScrollDown() {
 
 
 async selectToDate(targetDate: string): Promise<void> {
-  const dateLocator = this.page.locator(`[data-day="${targetDate}"]`);
+  const dateLocator = this.page.locator(`[data-testid="date-calendar"] div:nth-child(2) [data-day="${targetDate}"]`);
 
   const maxTries = 24; // safety limit (2 years)
   let tries = 0;

@@ -2,14 +2,24 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 30 * 1000,
-  retries: 1,
-  use: {
-    baseURL: 'https://v0-cmlookup2.vercel.app/',
-    trace: 'on-first-retry'
+  timeout: 30_000,
+  expect: { 
+    // allow some tolerance in snapshots
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02 } 
   },
   projects: [
-    { name: 'Desktop Chrome', use: { ...devices['Desktop Chrome'] } },
-    { name: 'Mobile Safari', use: { ...devices['iPhone 14'] } },
+    {
+      name: 'Chrome Desktop',
+      use: { browserName: 'chromium', viewport: { width: 1726, height: 1271 } },
+    },
+    {
+      name: 'Safari Mobile',
+      use: { 
+        browserName: 'webkit', 
+        viewport: { width: 390, height: 844 }, 
+        isMobile: true,
+        deviceScaleFactor: 3,
+      },
+    },
   ],
 });

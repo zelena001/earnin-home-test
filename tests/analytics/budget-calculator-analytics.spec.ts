@@ -3,7 +3,7 @@ import { BudgetCalculatorPage } from '../../pages/BudgetCalculatorPage';
 import { verifyAnalyticsEvent, captureSegmentEvents } from '../../utils/analyticsHelper';
 
 test.describe('Budget Calculator Analytics', () => {
-  test.only('should capture all relevant analytics events', async ({ page }) => {
+  test('should capture all relevant analytics events', async ({ page }) => {
     const budgetPage = new BudgetCalculatorPage(page);
 
     // 1️⃣ Start capturing analytics
