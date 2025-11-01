@@ -1,11 +1,9 @@
 name: Playwright Tests
 
 on:
-  # Run automatically on push or PR
   pull_request:
-    branches: [  development ]
+    branches: [development]
 
-  # ✅ Allow manual trigger from GitHub UI
   workflow_dispatch:
     inputs:
       target_branch:
@@ -26,38 +24,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up Docker Buildx for caching
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      # 3️⃣ Restore Docker cache (optional, speeds up rebuilds)
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
-
-      # 4️⃣ Build Docker image with caching
-      - name: Build Docker image
-        run: |
-          docker buildx build \
-            --cache-from=type=local,src=/tmp/.buildx-cache \
-            --cache-to=type=local,dest=/tmp/.buildx-cache-new,mode=max \
-            -t playwright-tests .
-
-      # 5️⃣ Replace old cache with new cache
-      - name: Update Docker cache
-        run: rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-      # 6️⃣ Run Playwright tests inside container
+      # 2️⃣ Run Playwright tests in official Docker image
       - name: Run Playwright tests
-        run: docker run --rm \
-              -v ${{ github.workspace }}/test-results:/app/test-results \
-              playwright-tests
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            mcr.microsoft.com/playwright:v1.44.0-focal \
+            npx playwright test
 
-      # 7️⃣ Upload test artifacts
+      # 3️⃣ Upload test artifacts
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

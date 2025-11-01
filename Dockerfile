@@ -1,23 +1,21 @@
-# Use Node.js official image
-FROM node:20
+# 1️⃣ Use Playwright official image with browsers and dependencies
+FROM mcr.microsoft.com/playwright:v1.44.0-focal
 
-# Set working directory in container
+# 2️⃣ Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json first
-# This allows Docker to cache npm install step
+# 3️⃣ Copy package.json and package-lock.json first for caching
 COPY package*.json ./
 
-# Install dependencies
+# 4️⃣ Install npm dependencies
 RUN npm ci
 
-# Copy your tsconfig and source code
-COPY tsconfig.json ./
-COPY playwright.config.ts ./
+# 5️⃣ Copy the rest of your project
+COPY tsconfig.json playwright.config.ts ./
 COPY . .
 
-# Optional: install Playwright browsers
-RUN npx playwright install --with-deps
+# 6️⃣ Optional: install Playwright browsers (already included in this image)
+# RUN npx playwright install --with-deps   <-- NOT needed
 
-# Default command: run tests
+# 7️⃣ Default command to run tests
 CMD ["npx", "playwright", "test"]
