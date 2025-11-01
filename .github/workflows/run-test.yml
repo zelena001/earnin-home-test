@@ -28,14 +28,11 @@ jobs:
         uses: actions/checkout@v3
 
       # 2️⃣ Run Playwright tests in official Docker image
+      - name: Build Docker image
+        run: docker build -t playwright-tests .
+
       - name: Run Playwright tests
-        run: |
-          docker run --rm \
-          -v ${{ github.workspace }}:/app \
-          -w /app \
-          --entrypoint bash \
-          mcr.microsoft.com/playwright:v1.44.0-focal \
-          -c "chown -R pwuser:pwuser /app && su pwuser -c 'npx playwright test'"
+        run: docker run --rm playwright-tests
 
       # 3️⃣ Upload test artifacts
       - name: Upload test results
