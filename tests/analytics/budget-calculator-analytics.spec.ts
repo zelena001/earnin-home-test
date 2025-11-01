@@ -26,7 +26,7 @@ test.describe('Budget Calculator Analytics', () => {
 
     // 5️⃣ Fill income and verify analytics
     await budgetPage.fillIncome('9000');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     const interactedIncomeEvent = analyticsEvents.find(
       e => e.event === 'User interacted with element' &&
@@ -40,7 +40,7 @@ test.describe('Budget Calculator Analytics', () => {
 
     // 6️⃣ Fill zipcode and verify analytics
     await budgetPage.fillZipCode('94040');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
 
     const interactedZipEvent = analyticsEvents.find(
       e => e.event === 'User interacted with element' &&
