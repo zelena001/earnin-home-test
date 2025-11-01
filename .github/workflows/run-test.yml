@@ -29,9 +29,7 @@ jobs:
         run: docker build -t playwright-tests .
 
       - name: Run Playwright tests
-        run: docker run --rm -u root \
-          -v ${{ github.workspace }}/test-results:/app/test-results \
-          playwright-tests
+        run: ocker run --rm -u root -v ${{ github.workspace }}/test-results:/app/test-results playwright-tests
 
       - name: Upload test results
         if: always()
