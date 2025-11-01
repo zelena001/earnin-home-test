@@ -33,8 +33,9 @@ jobs:
           docker run --rm \
           -v ${{ github.workspace }}:/app \
           -w /app \
+          --entrypoint bash \
           mcr.microsoft.com/playwright:v1.44.0-focal \
-          npx playwright test
+          -c "chown -R pwuser:pwuser /app && su pwuser -c 'npx playwright test'"
 
       # 3️⃣ Upload test artifacts
       - name: Upload test results
