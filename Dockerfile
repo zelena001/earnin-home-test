@@ -1,14 +1,19 @@
-FROM node:20
+# Use the official Playwright image with browsers preinstalled
+FROM mcr.microsoft.com/playwright:v1.44.0-focal
 
+# Set working directory
 WORKDIR /app
 
+# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm ci
 
+# Copy the rest of your code
 COPY tsconfig.json playwright.config.ts ./
 COPY . .
 
-# Do NOT install browsers here
-# We'll install them at runtime in CI
+# Switch to Playwright's default user to avoid permission issues
+USER pwuser
 
-CMD ["sh", "-c", "npx playwright install --with-deps && npx playwright test"]
+# Run tests
+CMD ["npx", "playwright", "test"]
