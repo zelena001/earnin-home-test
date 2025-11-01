@@ -1,0 +1,11 @@
+
+services:
+  playwright:
+    build: .
+    container_name: playwright-tests
+    tty: true
+    volumes:
+      - .:/app
+    environment:
+      CI: "true"
+    command: npx playwright test --reporter=html
