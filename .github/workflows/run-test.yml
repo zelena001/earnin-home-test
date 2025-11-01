@@ -3,7 +3,6 @@ name: Playwright Tests
 on:
   pull_request:
     branches: [development]
-
   workflow_dispatch:
     inputs:
       target_branch:
@@ -20,21 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write 
+      packages: write
 
     steps:
-      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Run Playwright tests in official Docker image
       - name: Build Docker image
         run: docker build -t playwright-tests .
 
       - name: Run Playwright tests
-        run: docker run --rm playwright-tests
+        run: docker run --rm -u root \
+          -v ${{ github.workspace }}/test-results:/app/test-results \
+          playwright-tests
 
-      # 3️⃣ Upload test artifacts
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
