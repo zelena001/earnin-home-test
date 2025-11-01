@@ -28,8 +28,10 @@ jobs:
       - name: Build Docker image
         run: docker build -t playwright-tests .
 
+      # Run Playwright tests inside container
       - name: Run Playwright tests
-        run: docker run --rm -u root -v ${{ github.workspace }}/test-results:/app/test-results playwright-tests
+        run: docker run --rm playwright-tests
+
 
       - name: Upload test results
         if: always()

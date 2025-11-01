@@ -1,11 +1,17 @@
+FROM node:20
 
-
-
-FROM mcr.microsoft.com/playwright:v1.44.0-focal
 WORKDIR /app
+
+# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm ci
+
+# Copy code
 COPY tsconfig.json playwright.config.ts ./
 COPY . .
-USER pwuser
+
+# Install Playwright browsers
+RUN npx playwright install --with-deps
+
+# Default command to run tests
 CMD ["npx", "playwright", "test"]
