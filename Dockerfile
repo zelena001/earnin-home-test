@@ -1,16 +1,20 @@
-FROM mcr.microsoft.com/playwright:v1.44.0-focal
+# Use Playwright image with Node and browsers (noble = Ubuntu 24.04)
+FROM mcr.microsoft.com/playwright:noble
 
+# Set working directory
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files first (for caching)
+COPY package.json package-lock.json ./
+
+# Install Node dependencies
 RUN npm ci
 
-COPY tsconfig.json playwright.config.ts ./
+# Copy the rest of your project
 COPY . .
 
-# Make node_modules and binaries executable by pwuser
-RUN chown -R pwuser:pwuser /app && chmod -R +x /app/node_modules/.bin
+# Install Playwright browsers (already included, but safe)
+RUN npx playwright install --with-deps
 
-USER pwuser
-
-CMD ["npx", "playwright", "test"]
+# Default command to run tests
+CMD ["npx", "playwright", "test", "--reporter=html"]
