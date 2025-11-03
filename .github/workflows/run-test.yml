@@ -23,9 +23,7 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          docker run --rm -u root \
-            -v ${{ github.workspace }}/playwright-report:/app/playwright-report \
-            playwright-tests
+          docker run --rm playwright-tests
 
       # 4️⃣ Upload test results
       - name: Upload Playwright Report
