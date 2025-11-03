@@ -21,6 +21,9 @@ jobs:
       - name: Prepare report folder
         run: mkdir -p ${{ github.workspace }}/playwright-report
 
+      - name: Debug container
+        run: docker run --rm playwright-tests ls -l /app/node_modules/.bin
+
       - name: Run Playwright tests
         run: |
           docker run --rm playwright-tests

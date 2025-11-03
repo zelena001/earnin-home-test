@@ -2,14 +2,18 @@ FROM mcr.microsoft.com/playwright:v1.56.1-noble
 
 WORKDIR /app
 
+# Copy package files first
 COPY package.json package-lock.json playwright.config.ts ./
-
 RUN npm ci --unsafe-perm
 
-COPY --chown=pwuser:pwuser . .
+# Copy the rest of the project
+COPY . .
 
+RUN mkdir -p /app/test-results /app/playwright-report && \
+    chown -R pwuser:pwuser /app/test-results /app/playwright-report
 
-# Default user in noble is pwuser, override to root
-USER root
+# Use default Playwright user
+USER pwuser
 
-CMD ["npx","playwright", "test", "--reporter=html"]
+# Just run tests — no report folders
+CMD ["npx", "playwright", "test"]
