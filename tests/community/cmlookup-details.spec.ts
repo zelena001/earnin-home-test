@@ -4,7 +4,7 @@ import memberDataJson from "../../testdata/memberData.json";
 import { Member } from "../../interfaces/communityMember";
 import { verifyMemberPageErrorMessages } from "../../helpers/testHelper";
 
-test.describe.only("Community Member Detail screen", () => {
+test.describe("Community Member Detail screen", () => {
   const Jennifer: Member = memberDataJson.member.Jennifer.info;
   test("Click member list and validate member status is correctly display", async ({
     community,
