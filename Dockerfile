@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/playwright:noble
 WORKDIR /app
 
 # Copy package files first (for caching)
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json playwright.config.ts ./
 
 # Install Node dependencies
 RUN npm ci
@@ -13,8 +13,8 @@ RUN npm ci
 # Copy the rest of your project
 COPY . .
 
-# Install Playwright browsers (already included, but safe)
-RUN npx playwright install --with-deps
+# Install Playwright browsers/ comment out as this should include in the base image
+# RUN npx playwright install --with-deps
 
 # Default command to run tests
 CMD ["npx", "playwright", "test", "--reporter=html"]
