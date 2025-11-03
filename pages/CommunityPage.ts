@@ -2,6 +2,7 @@ import { Page, Locator } from '@playwright/test';
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import { CommunityPageMemberDetail } from './CommunityPageMemberDetail';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
@@ -237,9 +238,16 @@ export class CommunityPage {
 
   // --- Misc ---
   /** Click first element matching the given text */
-  async clickElementByText(text: string): Promise<void> {
-    console.log(`Clicking element with text: "${text}"`);
-    await this.tableRows.locator(`text=${text}`).first().click();
-    console.log('Click complete.');
+  // async clickElementByText(text: string): Promise<void> {
+  //   console.log(`Clicking element with text: "${text}"`);
+  //   await this.tableRows.locator(`text=${text}`).first().click();
+  //   console.log('Click complete.');
+  // }
+
+  async clickMemberByText(name: string): Promise<CommunityPageMemberDetail> {
+    await this.tableRows.locator(`text=${name}`).first().click();
+    // Wait until member detail page is loaded (e.g. header or URL check)
+    await this.page.waitForURL(/\/members\//);
+    return new CommunityPageMemberDetail(this.page);
   }
 }

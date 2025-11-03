@@ -12,11 +12,12 @@ export const test = base.extend<{
     // Navigate to the page before each test
     await communityPage.goto();
 
-    // Provide it to the test
-    await use(communityPage);
+     // Give the "community" instance to the test
+  await use(communityPage);
 
-    // Cleanup if needed (e.g., logout) after test ends
-  },
+  // Teardown (runs AFTER the test)
+  console.log('Test finished');
+  }
 });
 
 export { expect } from '@playwright/test';

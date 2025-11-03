@@ -1,6 +1,6 @@
 import { test } from '../../fixtures/calculatorFixture';
 import { BudgetCalculatorPage } from '../../pages/BudgetCalculatorPage';
-import { verifyAnalyticsEvent, captureSegmentEvents } from '../../utils/analyticsHelper';
+import { verifyAnalyticsEvent, captureSegmentEvents } from '../../helpers/analyticsHelper';
 
 test.describe('Budget Calculator Analytics', () => {
   test('should capture all relevant analytics events', async ({ page }) => {
