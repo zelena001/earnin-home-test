@@ -10,6 +10,7 @@
     "outDir": "dist",                            // Compiled JS output
     "rootDir": ".",                              // Root folder for TS
     "moduleResolution": "node",
+    
     "resolveJsonModule": true
   },
   "include": [
@@ -19,7 +20,7 @@
     "interfaces/**/*.ts",
     "mocks/**/*.ts",
     "fixtures/**/*.ts"
-  ],
+, "helpers/analyticsHelper.ts", "helpers/mockHelper.ts"  ],
   "exclude": [
     "node_modules",
     "dist",

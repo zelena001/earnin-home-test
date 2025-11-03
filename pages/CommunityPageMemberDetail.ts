@@ -84,8 +84,6 @@ export class CommunityPageMemberDetail {
 
     const name = (await this.memberName.waitFor({ state: 'visible' })
       .then(() => this.memberName.textContent()))?.trim() || '';
-    console.log(`Member name on page: "${name}"`);
-
     const kycStatus = await this.getBadgeText(0);
     const cashoutStatus = await this.getBadgeText(1);
     const status = await this.getBadgeText(2);
