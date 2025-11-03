@@ -1,8 +1,8 @@
 // import { test, expect } from '@playwright/test';
-import { test,expect } from '../../fixtures/communitiesFixture.ts';
+import { test,expect } from '../../fixtures/communitiesFixture';
 import { CommunityPage } from '../../pages/CommunityPage';
-import memberDataJson from '../../testdata/memberData.json';
-import { Member } from '../../interfaces/communityMember.ts';
+import memberDataJson from '../../testdata/memberData';
+import { Member } from '../../interfaces/communityMember';
 import { CommunityPageMemberDetail } from '../../pages/CommunityPageMemberDetail';
 import mockMemberFallbackMessages from '../../utils/mockHelper';
 
@@ -18,14 +18,14 @@ await memberDetail.verifyMemberInfo(Jennifer);
 
   });
 
-  test('User landing on non-exist memer detail screen should see default message correctly', async ({ page },) => {
+  test('User landing on non-exist memer detail screen should see default message correctly', async ({ page, community }) => {
     const communityPageMemberDetail = new CommunityPageMemberDetail(page);
   await page.goto('https://v0-cmlookup2.vercel.app/members/123456789');
   await expect(communityPageMemberDetail.errorMessage).toHaveText('The member you\'re looking for doesn\'t exist or has been removed.');
  await expect(communityPageMemberDetail.errorHeader).toHaveText('Member Not Found');
 });
 
-test('Member detail screen should suppport dynamic error message from the back end correctly', async ({ page }) => {
+test('Member detail screen should suppport dynamic error message from the back end correctly', async ({ page, community }) => {
     const communityPageMemberDetail = new CommunityPageMemberDetail(page);
     await mockMemberFallbackMessages(page, '123456789', {
   "The member you're looking for doesn't exist or has been removed.": "This member is pending review by account manager. Please wait.",

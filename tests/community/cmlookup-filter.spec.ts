@@ -1,4 +1,4 @@
-import { test,expect } from '../../fixtures/communitiesFixture.ts';
+import { test,expect } from '../../fixtures/communitiesFixture';
 
 test.describe('Community Member Lookup', () => {
   test('filters by Active account status', async ({ community }) => {
@@ -13,7 +13,6 @@ test.describe('Community Member Lookup', () => {
   });
 
    test('filters by Member Id', async ({ community }) => {
- 
     await community.goto();
     const matchedMember = await community.getMemberCountByText('543210987');
     console.log(matchedMember);
