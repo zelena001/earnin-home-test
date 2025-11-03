@@ -9,6 +9,8 @@ RUN npm ci --unsafe-perm
 # Copy the rest of the project
 COPY . .
 
+RUN chmod -R a+x /app/node_modules/.bin
+
 # Use default Playwright user
 USER pwuser
 
