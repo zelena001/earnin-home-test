@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:noble
+FROM mcr.microsoft.com/playwright:v1.56.1-noble
 
 WORKDIR /app
 
@@ -10,4 +10,4 @@ COPY --chown=pwuser:pwuser . .
 
 USER pwuser
 
-CMD ["npx", "playwright", "test", "--reporter=html"]
+CMD ["playwright", "test", "--reporter=html"]
