@@ -11,8 +11,7 @@ RUN npm ci --unsafe-perm
 # Copy rest of project
 COPY . .
 
-# Browsers are already included in noble
-# RUN npx playwright install --with-deps  <-- remove
+# Default user in noble is pwuser, override to root
+USER root
 
-# Default command
 CMD ["npx", "playwright", "test", "--reporter=html"]
