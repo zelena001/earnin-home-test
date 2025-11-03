@@ -14,28 +14,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      # 2️⃣ Build Docker image
+      - name: Build Docker image
+        run: docker build -t playwright-tests .
 
-      # 3️⃣ Install dependencies
-      - name: Install dependencies
-        run: npm ci
+      - name: Prepare report folder
+        run: mkdir -p ${{ github.workspace }}/playwright-report
 
-      # 4️⃣ Install Playwright browsers
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Debug container
+        run: docker run --rm playwright-tests ls -l /app/node_modules/.bin
 
-      # 5️⃣ Run Playwright tests
       - name: Run Playwright tests
-        run: npx playwright test
+        run: |
+          docker run --rm playwright-tests
 
-      # 6️⃣ Upload test results
-      - name: Upload test results
+      # 4️⃣ Upload test results
+      - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: test-results/
+          name: playwright-report
+          path: playwright-report/

@@ -1,16 +1,22 @@
-FROM mcr.microsoft.com/playwright:v1.44.0-focal
+FROM mcr.microsoft.com/playwright:v1.56.1-noble
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+# Copy package files first
+COPY package.json package-lock.json playwright.config.ts ./ 
+RUN npm ci --unsafe-perm
 
-COPY tsconfig.json playwright.config.ts ./
+# Copy the rest of the project
 COPY . .
 
-# Make node_modules and binaries executable by pwuser
-RUN chown -R pwuser:pwuser /app && chmod -R +x /app/node_modules/.bin
+RUN chmod -R a+x /app/node_modules/.bin
 
+# Ensure test-results folder is writable
+RUN chown -R pwuser:pwuser /app
+#RUN mkdir -p /app/test-results && chmod -R a+rwx /app/test-results
+
+# Use default Playwright user
 USER pwuser
 
+# Just run tests — no report folders
 CMD ["npx", "playwright", "test"]
