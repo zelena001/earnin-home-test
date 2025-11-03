@@ -8,6 +8,8 @@ RUN npm ci --unsafe-perm
 
 COPY --chown=pwuser:pwuser . .
 
-USER pwuser
 
-CMD ["playwright", "test", "--reporter=html"]
+# Default user in noble is pwuser, override to root
+USER root
+
+CMD ["npx","playwright", "test", "--reporter=html"]
