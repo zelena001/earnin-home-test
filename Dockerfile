@@ -1,17 +1,17 @@
+# Dockerfile
 FROM mcr.microsoft.com/playwright:noble
 
 WORKDIR /app
 
-# Copy package files for caching
+# Copy package files
 COPY package.json package-lock.json playwright.config.ts ./
 
-# Install dependencies with unsafe-perm
+# Install dependencies as pwuser
 RUN npm ci --unsafe-perm
 
 # Copy rest of project
-COPY . .
+COPY --chown=pwuser:pwuser . .
 
-# Default user in noble is pwuser, override to root
-USER root
-
-CMD ["npx", "playwright", "test", "--reporter=html"]
+# Default user is pwuser
+# Run playwright directly, no npx
+CMD ["playwright", "test", "--reporter=html"]
