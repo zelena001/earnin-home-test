@@ -11,6 +11,9 @@ COPY . .
 
 RUN chmod -R a+x /app/node_modules/.bin
 
+# Ensure test-results folder is writable
+RUN mkdir -p /app/test-results && chmod -R a+rwx /app/test-results
+
 # Use default Playwright user
 USER pwuser
 
