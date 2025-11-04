@@ -8,9 +8,7 @@
     "skipLibCheck": true,                        // Skip checking node_modules
     "forceConsistentCasingInFileNames": true,   // File naming consistency
     "outDir": "dist",                            // Compiled JS output
-    "rootDir": ".",                              // Root folder for TS
-    "moduleResolution": "node",
-    
+    "rootDir": ".",                              // Root folder for TS    
     "resolveJsonModule": true
   },
   "include": [
