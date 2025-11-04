@@ -45,6 +45,11 @@ export class CommunityPage {
     return this.page.locator('[data-slot="calendar"] div div span').last();
   }
 
+    get countElement(): Locator {
+    return this.page.locator('[class="space-y-4"] div:nth-child(1) p:nth-child(1)').last();
+  }
+
+
   // Adaptive table locator for mobile vs desktop
   get tableRows(): Locator {
     return this.isMobile
@@ -236,18 +241,12 @@ export class CommunityPage {
     return count;
   }
 
-  // --- Misc ---
-  /** Click first element matching the given text */
-  // async clickElementByText(text: string): Promise<void> {
-  //   console.log(`Clicking element with text: "${text}"`);
-  //   await this.tableRows.locator(`text=${text}`).first().click();
-  //   console.log('Click complete.');
-  // }
-
   async clickMemberByText(name: string): Promise<CommunityPageMemberDetail> {
     await this.tableRows.locator(`text=${name}`).first().click();
     // Wait until member detail page is loaded (e.g. header or URL check)
     await this.page.waitForURL(/\/members\//);
     return new CommunityPageMemberDetail(this.page);
   }
+
+  
 }

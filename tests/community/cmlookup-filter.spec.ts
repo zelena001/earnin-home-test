@@ -1,4 +1,5 @@
 import { test,expect } from '../../fixtures/communitiesFixture';
+import { expectMemberCountText } from '../../helpers/testHelper';
 
 test.describe('Community Member Lookup', () => {
   test('filters by Active account status', async ({ community }) => {
@@ -8,8 +9,8 @@ test.describe('Community Member Lookup', () => {
     console.log(matchedMember);
     await community.selectStatus('Active');
     const filteredCount = await community.getTotalRowsCount();
-    console.log(filteredCount);
-    expect(matchedMember).toEqual(filteredCount);
+    await expectMemberCountText(community.countElement, matchedMember);
+    expect(filteredCount).toEqual(matchedMember);
   });
 
    test('filters by Member Id', async ({ community }) => {
@@ -18,8 +19,8 @@ test.describe('Community Member Lookup', () => {
     console.log(matchedMember);
     await community.searchByText('543210987');
     const filteredCount = await community.getTotalRowsCount();
-    console.log(filteredCount);
-    expect(matchedMember).toEqual(filteredCount);
+    await expectMemberCountText(community.countElement, matchedMember);
+    expect(filteredCount).toEqual(matchedMember);
   });
 
   test('filters by Member Name', async ({ community }) => {
@@ -29,8 +30,8 @@ test.describe('Community Member Lookup', () => {
     console.log(matchedMember);
     await community.searchByText('Jennifer Brown');
     const filteredCount = await community.getTotalRowsCount();
-    console.log(filteredCount);
-    expect(matchedMember).toEqual(filteredCount);
+    await expectMemberCountText(community.countElement, matchedMember);
+    expect(filteredCount).toEqual(matchedMember);
   });
 
   test('filters by Member Email', async ({ community }) => {
@@ -40,8 +41,8 @@ test.describe('Community Member Lookup', () => {
     console.log(matchedMember);
     await community.searchByText('jennifer.brown@example.com');
     const filteredCount = await community.getTotalRowsCount();
-    console.log(filteredCount);
-    expect(matchedMember).toEqual(filteredCount);
+    await expectMemberCountText(community.countElement, matchedMember);
+    expect(filteredCount).toEqual(matchedMember);
   });
 
 //Seem like there is a bug here, the calendar go upward and user can't scroll up to select date
@@ -57,8 +58,8 @@ test.describe('Community Member Lookup', () => {
     await community.selectFromDate('12/1/2024');
     await community.selectToDate('1/31/2025');
     const filteredCount = await community.getTotalRowsCount();
-    console.log(filteredCount);
-    expect(matchedMember).toEqual(filteredCount);
+    await expectMemberCountText(community.countElement, matchedMember);
+    expect(filteredCount).toEqual(matchedMember);
   });
 
   //Seem like there is a bug here, the calendar go upward and user can't scroll up to select date
@@ -74,8 +75,8 @@ test.describe('Community Member Lookup', () => {
     await community.selectFromDate('7/1/2025');
     await community.selectToDate('8/31/2025');
     const filteredCount = await community.getTotalRowsCount();
-    console.log(filteredCount);
-    expect(matchedMember).toEqual(filteredCount);
+    await expectMemberCountText(community.countElement, matchedMember);
+    expect(filteredCount).toEqual(matchedMember);
   });
 });
 
