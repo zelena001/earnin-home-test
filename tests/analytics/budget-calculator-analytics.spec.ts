@@ -1,20 +1,17 @@
 import { test } from '../../fixtures/calculatorFixture';
-import { BudgetCalculatorPage } from '../../pages/BudgetCalculatorPage';
 import { verifyAnalyticsEvent, captureSegmentEvents } from '../../helpers/analyticsHelper';
 
 test.describe('Budget Calculator Analytics', () => {
-  test('should capture all relevant analytics events', async ({ page }) => {
-    const budgetPage = new BudgetCalculatorPage(page);
+  test('should capture all relevant analytics events', async ({ calculator ,page }) => {
 
-    // 1️⃣ Start capturing analytics
     const analyticsEvents = await captureSegmentEvents(page);
 
     // 2️⃣ Navigate to calculators page
-    await budgetPage.goto();
+    await calculator.goto();
 
     // 3️⃣ Click Budget Calculator card
-    await budgetPage.clickBudgetCalculatorCard();
-    await page.waitForTimeout(1000); // wait for analytics
+    await calculator.clickBudgetCalculatorCard();
+    await page.waitForTimeout(1500); // wait for analytics, maybe better if we use retry, but fail case will make it run longer. we can impreove later.
 
     // 4️⃣ Verify "User viewed screen" event
     const viewedScreenEvent = analyticsEvents.find(
@@ -25,8 +22,8 @@ test.describe('Budget Calculator Analytics', () => {
     });
 
     // 5️⃣ Fill income and verify analytics
-    await budgetPage.fillIncome('9000');
-    await page.waitForTimeout(1000);
+    await calculator.fillIncome('9000');
+    await page.waitForTimeout(1500); // wait for analytics, maybe better if we use retry, but fail case will make it run longer. we can impreove later.
 
     const interactedIncomeEvent = analyticsEvents.find(
       e => e.event === 'User interacted with element' &&
@@ -39,8 +36,8 @@ test.describe('Budget Calculator Analytics', () => {
     });
 
     // 6️⃣ Fill zipcode and verify analytics
-    await budgetPage.fillZipCode('94040');
-    await page.waitForTimeout(1000);
+    await calculator.fillZipCode('94040');
+    await page.waitForTimeout(1500); // wait for analytics, maybe better if we use retry, but fail case will make it run longer. we can impreove later.
 
     const interactedZipEvent = analyticsEvents.find(
       e => e.event === 'User interacted with element' &&
@@ -53,8 +50,8 @@ test.describe('Budget Calculator Analytics', () => {
     });
 
     // 7️⃣ Click Calculate and verify analytics
-    await budgetPage.clickCalculate();
-    await page.waitForTimeout(1000);
+    await calculator.clickCalculate();
+    await page.waitForTimeout(1500);
 
     const interactedCalculateEvent = analyticsEvents.find(
       e => e.event === 'User interacted with element' &&
