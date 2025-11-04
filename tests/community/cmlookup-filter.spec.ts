@@ -1,83 +1,64 @@
-import { test,expect } from '../../fixtures/communitiesFixture';
-import { expectMemberCountText } from '../../helpers/testHelper';
+import { test } from '../../fixtures/communitiesFixture';
+import { verifyFilteredResult } from '../../helpers/testHelper';
 
 test.describe('Community Member Lookup', () => {
   test('filters by Active account status', async ({ community }) => {
-
     await community.goto();
-    const matchedMember = await community.getStatusFilteredMembersCount('Active');
-    console.log(matchedMember);
+
+    const matchedCount = await community.getStatusFilteredMembersCount('Active');
     await community.selectStatus('Active');
-    const filteredCount = await community.getTotalRowsCount();
-    await expectMemberCountText(community.countElement, matchedMember);
-    expect(filteredCount).toEqual(matchedMember);
+
+    await verifyFilteredResult(community, matchedCount);
   });
 
-   test('filters by Member Id', async ({ community }) => {
+  test('filters by Member Id', async ({ community }) => {
     await community.goto();
-    const matchedMember = await community.getMemberCountByText('543210987');
-    console.log(matchedMember);
+
+    const matchedCount = await community.getMemberCountByText('543210987');
     await community.searchByText('543210987');
-    const filteredCount = await community.getTotalRowsCount();
-    await expectMemberCountText(community.countElement, matchedMember);
-    expect(filteredCount).toEqual(matchedMember);
+
+    await verifyFilteredResult(community, matchedCount);
   });
 
   test('filters by Member Name', async ({ community }) => {
- 
     await community.goto();
-    const matchedMember = await community.getMemberCountByText('Jennifer Brown');
-    console.log(matchedMember);
+
+    const matchedCount = await community.getMemberCountByText('Jennifer Brown');
     await community.searchByText('Jennifer Brown');
-    const filteredCount = await community.getTotalRowsCount();
-    await expectMemberCountText(community.countElement, matchedMember);
-    expect(filteredCount).toEqual(matchedMember);
+
+    await verifyFilteredResult(community, matchedCount);
   });
 
   test('filters by Member Email', async ({ community }) => {
- 
     await community.goto();
-    const matchedMember = await community.getMemberCountByText('jennifer.brown@example.com');
-    console.log(matchedMember);
+
+    const matchedCount = await community.getMemberCountByText('jennifer.brown@example.com');
     await community.searchByText('jennifer.brown@example.com');
-    const filteredCount = await community.getTotalRowsCount();
-    await expectMemberCountText(community.countElement, matchedMember);
-    expect(filteredCount).toEqual(matchedMember);
+
+    await verifyFilteredResult(community, matchedCount);
   });
 
-//Seem like there is a bug here, the calendar go upward and user can't scroll up to select date
-  test('filters by Date December 2024 to Jan 2025', async ({ community }) => {
- 
+  test('filters by Date December 2024 to January 2025', async ({ community }) => {
     await community.goto();
-    const matchedMember = await community.getMemberCountByDateRange('12/1/2024', '1/31/2025');
-    console.log(matchedMember);
-  // This force scroll step is needed because the date picker is not fully visible not shift downward
+
+    const matchedCount = await community.getMemberCountByDateRange('12/1/2024', '1/31/2025');
     await community.forceScrollDown();
-     await community.datePicker.click();
-    
+    await community.datePicker.click();
     await community.selectFromDate('12/1/2024');
     await community.selectToDate('1/31/2025');
-    const filteredCount = await community.getTotalRowsCount();
-    await expectMemberCountText(community.countElement, matchedMember);
-    expect(filteredCount).toEqual(matchedMember);
+
+    await verifyFilteredResult(community, matchedCount);
   });
 
-  //Seem like there is a bug here, the calendar go upward and user can't scroll up to select date
   test('filters by Date July 2025 to August 2025', async ({ community }) => {
- 
     await community.goto();
-    const matchedMember = await community.getMemberCountByDateRange('7/1/2025', '8/31/2025');
-    console.log(matchedMember);
-  // This force scroll step is needed because the date picker is not fully visible not shift downward
+
+    const matchedCount = await community.getMemberCountByDateRange('7/1/2025', '8/31/2025');
     await community.forceScrollDown();
-     await community.datePicker.click();
-    
+    await community.datePicker.click();
     await community.selectFromDate('7/1/2025');
     await community.selectToDate('8/31/2025');
-    const filteredCount = await community.getTotalRowsCount();
-    await expectMemberCountText(community.countElement, matchedMember);
-    expect(filteredCount).toEqual(matchedMember);
+
+    await verifyFilteredResult(community, matchedCount);
   });
 });
-
-

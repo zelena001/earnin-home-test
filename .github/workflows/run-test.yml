@@ -24,9 +24,14 @@ jobs:
       - name: Debug container
         run: docker run --rm playwright-tests ls -l /app/node_modules/.bin
 
+      # - name: Run Playwright tests
+      #   run: |
+      #     docker run --rm playwright-tests
+
       - name: Run Playwright tests
         run: |
-          docker run --rm playwright-tests
+          docker run --rm -v ${{ github.workspace }}/playwright-report:/app/playwright-report playwright-tests
+
 
       # 4️⃣ Upload test results
       - name: Upload Playwright Report

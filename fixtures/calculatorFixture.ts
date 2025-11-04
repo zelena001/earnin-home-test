@@ -1,17 +1,14 @@
-// tests/fixtures/bypassCookies.ts
-import { test as base, expect } from '@playwright/test';
-import type { BrowserContext } from '@playwright/test';
 
-const PREFERENCES_VALUE = 'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1';
+import { test as base, expect, BrowserContext } from '@playwright/test';
+import { BudgetCalculatorPage } from '../pages/BudgetCalculatorPage'; // adjust path
 
-export const test = base.extend<{ bypassedCookies: boolean }>({
-  // This overrides the built-in page fixture behavior so cookies/localStorage are set
-  // before the test's page navigates.
+export const test = base.extend<{ calculator: BudgetCalculatorPage }>({
+  // --- Override `page` first so cookies and localStorage are handled ---
   page: async ({ page, context }, use) => {
-    // 1) Add the cookie to the context BEFORE navigation
+    // 1) Add cookies before navigation
     await context.addCookies([
       {
-        name: 'datagrail_consent_preferences', // or 'preferences' if that's the exact cookie name shown in DevTools
+        name: 'datagrail_consent_preferences',
         value: 'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1',
         domain: 'www.earnin.com',
         path: '/',
@@ -45,17 +42,20 @@ export const test = base.extend<{ bypassedCookies: boolean }>({
         httpOnly: false,
         secure: false,
         sameSite: 'Lax',
-      }
+      },
     ]);
 
-    // 2) Defensive: set localStorage before any page script runs (so checks that read localStorage pass)
+    // 2) Inject localStorage setup
     (context as BrowserContext).addInitScript(() => {
       try {
-        localStorage.setItem('datagrail_consent_preferences', 'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1');
-      } catch (e) { /* ignore cross-origin issues */ }
+        localStorage.setItem(
+          'datagrail_consent_preferences',
+          'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1'
+        );
+      } catch {}
     });
 
-    // 3) Another defensive init script to remove banner DOM immediately if it still tries to show
+    // 3) Remove cookie banners proactively
     (context as BrowserContext).addInitScript(() => {
       const removeBanner = () => {
         const selectors = [
@@ -63,23 +63,29 @@ export const test = base.extend<{ bypassedCookies: boolean }>({
           '.onetrust-banner-wrapper',
           '.ot-sdk-container',
           '.cookie-consent',
-          '[data-testid="cookie-banner"]'
+          '[data-testid="cookie-banner"]',
         ];
         for (const s of selectors) {
           const el = document.querySelector(s);
           if (el) el.remove();
         }
-        // hide overlays that often block clicks
         const overlays = document.querySelectorAll('[class*="cookie"], [id*="onetrust"]');
-        overlays.forEach(e => (e as HTMLElement).style.display = 'none');
+        overlays.forEach((e) => ((e as HTMLElement).style.display = 'none'));
       };
       removeBanner();
       document.addEventListener('DOMContentLoaded', removeBanner);
       window.addEventListener('load', removeBanner);
     });
 
-    // 4) Now proceed with the normal page for the test
+    // Continue with the modified page
     await use(page);
+  },
+
+  // --- Now define your POM fixture ---
+  calculator: async ({ page }, use) => {
+    const calculator = new BudgetCalculatorPage(page);
+    await calculator.goto(); // automatically navigate to calculator page
+    await use(calculator);
   },
 });
 
