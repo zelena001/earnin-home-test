@@ -42,6 +42,7 @@ test.describe("Community Member Lookup", () => {
     await verifyFilteredResult(community, matchedCount);
   });
 
+  //These date picker are high likely to be bug on mobile, desktop are fine
   test("filters by Date December 2024 to January 2025", async ({
     community,
   }) => {
@@ -51,7 +52,8 @@ test.describe("Community Member Lookup", () => {
       "12/1/2024",
       "1/31/2025"
     );
-    await community.forceScrollDown();
+    // if screen is really small, need to force scroll down to see the date picker
+    //await community.forceScrollDown();
     await community.datePicker.click();
     await community.selectFromDate("12/1/2024");
     await community.selectToDate("1/31/2025");
@@ -59,6 +61,7 @@ test.describe("Community Member Lookup", () => {
     await verifyFilteredResult(community, matchedCount);
   });
 
+    //These date picker are high likely to be bug on mobile, desktop are fine
   test("filters by Date July 2025 to August 2025", async ({ community }) => {
     await community.goto();
 
@@ -66,7 +69,8 @@ test.describe("Community Member Lookup", () => {
       "7/1/2025",
       "8/31/2025"
     );
-    await community.forceScrollDown();
+    // if screen is really small, need to force scroll down to see the date picker
+    //await community.forceScrollDown();
     await community.datePicker.click();
     await community.selectFromDate("7/1/2025");
     await community.selectToDate("8/31/2025");
