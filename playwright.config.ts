@@ -4,6 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   timeout: 30_000,
+  workers: process.env.CI ? 2 : undefined,
   reporter: [["html", { open: "never", outputFolder: "playwright-report" }]],
   expect: {
     // ✅ Snapshot/visual testing tolerances
