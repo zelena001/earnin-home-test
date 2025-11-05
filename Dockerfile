@@ -17,4 +17,4 @@ RUN chown -R pwuser:pwuser /app
 USER pwuser
 
 # Default command: run tests and generate HTML report
-CMD ["npx", "playwright", "test", "--reporter=html"]
+CMD ["npx", "playwright", "test"]
