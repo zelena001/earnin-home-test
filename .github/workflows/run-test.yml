@@ -77,3 +77,10 @@ jobs:
           publish_dir: playwright-report
           destination_dir: reports/${{ github.run_number }}
           keep_files: true  # ✅ Keeps existing older reports
+          
+      - name: 📣 Display report link
+        run: |
+          echo ""
+          echo "✅ Playwright HTML report has been published!"
+          echo "👉 https://zelena001.github.io/earnin-home-test/reports/${{ github.run_number }}/"
+          echo ""
