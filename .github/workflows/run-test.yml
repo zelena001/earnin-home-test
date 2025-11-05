@@ -6,38 +6,29 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write     # ✅ Required for deploying to gh-pages
+  contents: write  
 
 jobs:
-  # 🧪 Run Playwright tests
   e2e-tests:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Build Docker image
       - name: Build Docker image
         run: docker build -t playwright-tests .
 
-      # 3️⃣ Prepare report folder
       - name: Prepare report folder
         run: mkdir -p ${{ github.workspace }}/playwright-report
 
-      # 4️⃣ Optional: Debug container
-      - name: Debug container
-        run: docker run --rm playwright-tests ls -l /app/node_modules/.bin
-
-      # 5️⃣ Run Playwright tests (Docker)
-      - name: Run Playwright tests
+      - name: Run Playwright tests (limit to 1 worker)
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/playwright-report:/app/playwright-report \
-            playwright-tests
+            playwright-tests \
+            npx playwright test --workers=1
 
-      # 6️⃣ Upload Playwright Report as artifact
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -45,7 +36,6 @@ jobs:
           name: playwright-report
           path: playwright-report/
 
-  # 🌐 Deploy HTML report to GitHub Pages
   publish-report:
     if: always()
     needs: e2e-tests
@@ -61,8 +51,26 @@ jobs:
           name: playwright-report
           path: playwright-report
 
-      - name: Deploy to GitHub Pages
+      # 🧹 Cleanup: Keep only the latest 5 reports
+      - name: Clean up old reports
+        run: |
+          git fetch origin gh-pages || echo "No gh-pages branch yet"
+          git checkout gh-pages || git checkout --orphan gh-pages
+          mkdir -p reports
+          cd reports
+          echo "Keeping only the 5 most recent reports..."
+          ls -t | tail -n +6 | xargs -r rm -rf
+          cd ..
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add reports || true
+          git commit -m "Cleanup old reports" || echo "Nothing to clean"
+          git push origin gh-pages || echo "No gh-pages yet"
+
+      # 🚀 Deploy: Store new report under reports/<run_number>/
+      - name: Deploy Playwright report (versioned)
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: playwright-report
+          destination_dir: reports/${{ github.run_number }}
