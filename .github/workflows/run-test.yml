@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write  
+  contents: write
 
 jobs:
   e2e-tests:
@@ -61,9 +61,11 @@ jobs:
           echo "Keeping only the 5 most recent reports..."
           ls -t | tail -n +6 | xargs -r rm -rf
           cd ..
+          # ✅ Add redirect index.html for convenience
+          echo '<meta http-equiv="refresh" content="0; url=reports/latest/">' > index.html
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add reports || true
+          git add reports index.html || true
           git commit -m "Cleanup old reports" || echo "Nothing to clean"
           git push origin gh-pages || echo "No gh-pages yet"
 
@@ -74,3 +76,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: playwright-report
           destination_dir: reports/${{ github.run_number }}
+          keep_files: true  # ✅ Keeps existing older reports
