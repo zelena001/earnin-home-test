@@ -1,0 +1,134 @@
+# 🧪 Playwright E2E Tests
+
+This project uses **[Playwright](https://playwright.dev)** for end-to-end (E2E) testing.  
+You can run tests either **locally** (via Node.js) or inside a **Docker container** for fully reproducible results.  
+The test suite also runs automatically in **GitHub Actions CI** on every pull request.
+
+---
+
+## ⚙️ Local Setup (Node.js)
+
+Run Playwright tests locally if you have Node.js installed.
+
+### 1️⃣ Prerequisites
+
+Make sure you have the following installed:
+- [Node.js](https://nodejs.org/) **v18 or later**
+- **npm v8 or later**
+
+### 2️⃣ Install dependencies
+
+```bash
+npm ci
+```
+
+### 3️⃣ Install Playwright browsers and system dependencies
+
+```bash
+npx playwright install --with-deps
+```
+
+### 4️⃣ Run tests locally
+
+```bash
+npx playwright test
+```
+
+### 5️⃣ View the HTML report
+
+After your tests complete, generate and open the test report:
+
+```bash
+npx playwright show-report
+```
+
+Or manually open the generated file:
+
+```
+playwright-report/index.html
+```
+
+---
+
+## 🐳 Run Tests via Docker
+
+Running tests in Docker ensures consistent behavior across different environments — perfect for CI pipelines and team collaboration.
+
+### 1️⃣ Build the Docker image
+
+```bash
+docker build -t playwright-tests .
+```
+
+### 2️⃣ Run Playwright tests inside the container
+
+```bash
+docker run --rm -v $(pwd)/playwright-report:/app/playwright-report playwright-tests
+```
+
+> 💡 The `-v` flag mounts your local `playwright-report` folder so reports are saved on your machine.
+
+### 3️⃣ View the HTML report
+
+After the test run completes, open the report locally:
+
+```
+./playwright-report/index.html
+```
+
+---
+
+## 🧭 CI Integration (GitHub Actions)
+
+This project includes a **GitHub Actions workflow** (`.github/workflows/playwright.yml`) that:
+
+1. Builds the Docker image  
+2. Runs Playwright tests  
+3. Uploads the HTML report as a downloadable artifact  
+
+> You can view test results and download the report directly from the **GitHub Actions → Artifacts** section after a workflow run.
+
+---
+
+## 🧰 Useful Commands
+
+| Command | Description |
+|----------|-------------|
+| `npx playwright test` | Run all tests locally |
+| `npx playwright test --ui` | Run tests in interactive UI mode |
+| `npx playwright show-report` | Open the last HTML report |
+| `npx playwright codegen <url>` | Generate tests by recording browser actions |
+| `npx playwright test --grep "keyword"` | Run only tests matching a keyword |
+
+---
+
+## 🗂 Folder Structure
+
+```
+.
+├── tests/                     # Test files
+├── pages/                     # Page Object Models
+├── helpers/                   # Shared utility functions
+├── playwright.config.ts       # Playwright configuration
+├── Dockerfile                 # Docker setup for running tests
+├── .github/workflows/         # GitHub Actions workflows
+└── README.md                  # This file
+```
+
+---
+
+## 🩵 Troubleshooting
+
+| Issue | Solution |
+|--------|-----------|
+| **Browsers missing** | Run `npx playwright install --with-deps` |
+| **Permission denied in Docker** | Add `RUN chmod -R a+rwx /app` in your Dockerfile |
+| **Report not visible in CI** | Make sure you mount the report folder: `-v $(pwd)/playwright-report:/app/playwright-report` |
+| **Tests flaky or timing out** | Increase timeout in `playwright.config.ts` or use explicit waits |
+
+---
+
+## 👏 Credits
+
+Maintained with ❤️ using [Playwright](https://playwright.dev).  
+Contributions, issues, and pull requests are welcome!

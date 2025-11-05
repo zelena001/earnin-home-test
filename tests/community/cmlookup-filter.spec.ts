@@ -1,63 +1,79 @@
-import { test } from '../../fixtures/communitiesFixture';
-import { verifyFilteredResult } from '../../helpers/testHelper';
+import { test } from "../../fixtures/communitiesFixture";
+import { verifyFilteredResult } from "../../helpers/testHelper";
 
-test.describe('Community Member Lookup', () => {
-  test('filters by Active account status', async ({ community }) => {
+test.describe("Community Member Lookup", () => {
+  test("filters by Active account status", async ({ community }) => {
     await community.goto();
 
-    const matchedCount = await community.getStatusFilteredMembersCount('Active');
-    await community.selectStatus('Active');
+    const matchedCount = await community.getStatusFilteredMembersCount(
+      "Active"
+    );
+    await community.selectStatus("Active");
 
     await verifyFilteredResult(community, matchedCount);
   });
 
-  test('filters by Member Id', async ({ community }) => {
+  test("filters by Member Id", async ({ community }) => {
     await community.goto();
 
-    const matchedCount = await community.getMemberCountByText('543210987');
-    await community.searchByText('543210987');
+    const matchedCount = await community.getMemberCountByText("543210987");
+    await community.searchByText("543210987");
 
     await verifyFilteredResult(community, matchedCount);
   });
 
-  test('filters by Member Name', async ({ community }) => {
+  test("filters by Member Name", async ({ community }) => {
     await community.goto();
 
-    const matchedCount = await community.getMemberCountByText('Jennifer Brown');
-    await community.searchByText('Jennifer Brown');
+    const matchedCount = await community.getMemberCountByText("Jennifer Brown");
+    await community.searchByText("Jennifer Brown");
 
     await verifyFilteredResult(community, matchedCount);
   });
 
-  test('filters by Member Email', async ({ community }) => {
+  test("filters by Member Email", async ({ community }) => {
     await community.goto();
 
-    const matchedCount = await community.getMemberCountByText('jennifer.brown@example.com');
-    await community.searchByText('jennifer.brown@example.com');
+    const matchedCount = await community.getMemberCountByText(
+      "jennifer.brown@example.com"
+    );
+    await community.searchByText("jennifer.brown@example.com");
 
     await verifyFilteredResult(community, matchedCount);
   });
 
-  test('filters by Date December 2024 to January 2025', async ({ community }) => {
+  //These date picker are high likely to be bug on mobile, desktop are fine
+  test("filters by Date December 2024 to January 2025", async ({
+    community,
+  }) => {
     await community.goto();
 
-    const matchedCount = await community.getMemberCountByDateRange('12/1/2024', '1/31/2025');
-    await community.forceScrollDown();
+    const matchedCount = await community.getMemberCountByDateRange(
+      "12/1/2024",
+      "1/31/2025"
+    );
+    // if screen is really small, need to force scroll down to see the date picker
+    //await community.forceScrollDown();
     await community.datePicker.click();
-    await community.selectFromDate('12/1/2024');
-    await community.selectToDate('1/31/2025');
+    await community.selectFromDate("12/1/2024");
+    await community.selectToDate("1/31/2025");
 
     await verifyFilteredResult(community, matchedCount);
   });
 
-  test('filters by Date July 2025 to August 2025', async ({ community }) => {
+    //These date picker are high likely to be bug on mobile, desktop are fine
+  test("filters by Date July 2025 to August 2025", async ({ community }) => {
     await community.goto();
 
-    const matchedCount = await community.getMemberCountByDateRange('7/1/2025', '8/31/2025');
-    await community.forceScrollDown();
+    const matchedCount = await community.getMemberCountByDateRange(
+      "7/1/2025",
+      "8/31/2025"
+    );
+    // if screen is really small, need to force scroll down to see the date picker
+    //await community.forceScrollDown();
     await community.datePicker.click();
-    await community.selectFromDate('7/1/2025');
-    await community.selectToDate('8/31/2025');
+    await community.selectFromDate("7/1/2025");
+    await community.selectToDate("8/31/2025");
 
     await verifyFilteredResult(community, matchedCount);
   });
