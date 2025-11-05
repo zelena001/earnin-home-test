@@ -6,20 +6,12 @@ export const test = base.extend<{ calculator: BudgetCalculatorPage }>({
   // --- Override `page` first so cookies and localStorage are handled ---
   page: async ({ page, context }, use) => {
     // 1) Add cookies before navigation
+    // The reason we need these cookies is to bypass cookie consent banners, otherwise it will block the screen
     await context.addCookies([
       {
         name: 'datagrail_consent_preferences',
         value: 'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1',
         domain: 'www.earnin.com',
-        path: '/',
-        httpOnly: false,
-        secure: true,
-        sameSite: 'Strict',
-      },
-      {
-        name: 'datagrail_consent_preferences',
-        value: 'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1',
-        domain: '.earnin.com',
         path: '/',
         httpOnly: false,
         secure: true,
@@ -45,46 +37,13 @@ export const test = base.extend<{ calculator: BudgetCalculatorPage }>({
       },
     ]);
 
-    // 2) Inject localStorage setup
-    (context as BrowserContext).addInitScript(() => {
-      try {
-        localStorage.setItem(
-          'datagrail_consent_preferences',
-          'dg-category-essential:1|dg-category-functional:1|dg-category-marketing:1|dg-category-performance:1'
-        );
-      } catch {}
-    });
-
-    // 3) Remove cookie banners proactively
-    (context as BrowserContext).addInitScript(() => {
-      const removeBanner = () => {
-        const selectors = [
-          '#onetrust-consent-sdk',
-          '.onetrust-banner-wrapper',
-          '.ot-sdk-container',
-          '.cookie-consent',
-          '[data-testid="cookie-banner"]',
-        ];
-        for (const s of selectors) {
-          const el = document.querySelector(s);
-          if (el) el.remove();
-        }
-        const overlays = document.querySelectorAll('[class*="cookie"], [id*="onetrust"]');
-        overlays.forEach((e) => ((e as HTMLElement).style.display = 'none'));
-      };
-      removeBanner();
-      document.addEventListener('DOMContentLoaded', removeBanner);
-      window.addEventListener('load', removeBanner);
-    });
-
-    // Continue with the modified page
     await use(page);
   },
 
-  // --- Now define your POM fixture ---
+  //  POM Feature
   calculator: async ({ page }, use) => {
     const calculator = new BudgetCalculatorPage(page);
-    await calculator.goto(); // automatically navigate to calculator page
+    await calculator.goto();
     await use(calculator);
   },
 });

@@ -15,7 +15,7 @@ export const test = base.extend<{
      // Give the "community" instance to the test
   await use(communityPage);
 
-  // Teardown (runs AFTER the test)
+  // Teardown (runs AFTER the test) antything from this line is teardown
   console.log('Test finished');
   }
 });
