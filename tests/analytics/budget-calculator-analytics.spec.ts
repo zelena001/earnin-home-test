@@ -17,15 +17,14 @@ test.describe("Budget Calculator Analytics", () => {
       await calculator.clickBudgetCalculatorCard();
 
       // Verify "User viewed screen" event
-      verifyAnalyticsEventTrigger(analyticsEvents, {
+      await verifyAnalyticsEventTrigger(analyticsEvents, {
         event: "User viewed screen",
         "properties.screenName": "Budget Calculator",
       });
 
       // Step 3: Fill income and verify analytics
       await calculator.fillIncome("9000");
-
-      verifyAnalyticsEventTrigger(analyticsEvents, {
+      await verifyAnalyticsEventTrigger(analyticsEvents, {
         event: "User interacted with element",
         "properties.elementName": "Income",
         "properties.component": "Input Field",
@@ -33,8 +32,7 @@ test.describe("Budget Calculator Analytics", () => {
 
       // Step 4: Fill Zip Code and verify analytics
       await calculator.fillZipCode("94040");
-
-      verifyAnalyticsEventTrigger(analyticsEvents, {
+      await verifyAnalyticsEventTrigger(analyticsEvents, {
         event: "User interacted with element",
         "properties.elementName": "Zip Code",
         "properties.component": "Input Field",
@@ -42,8 +40,7 @@ test.describe("Budget Calculator Analytics", () => {
 
       // Step 5: Click Calculate and verify analytics
       await calculator.clickCalculate();
-
-      verifyAnalyticsEventTrigger(analyticsEvents, {
+      await verifyAnalyticsEventTrigger(analyticsEvents, {
         event: "User interacted with element",
         "properties.elementName": "Calculate",
         "properties.component": "CTA",
