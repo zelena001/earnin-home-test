@@ -27,7 +27,7 @@ jobs:
           docker run --rm \
             -v ${{ github.workspace }}/playwright-report:/app/playwright-report \
             playwright-tests \
-            npx playwright test --workers=3
+            npx playwright test 
 
       - name: Upload Playwright Report
         if: always()
