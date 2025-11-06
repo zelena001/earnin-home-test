@@ -1,22 +1,25 @@
-// import { test, expect } from '@playwright/test';
-import { test } from "../../fixtures/communitiesFixture";
+import { test, expect, Page } from "@playwright/test";
+import { CommunityPage } from "../../pages/CommunityPage";
 import memberDataJson from "../../testdata/memberData.json";
 import { Member } from "../../interfaces/communityMember";
 import { verifyMemberPageErrorMessages } from "../../helpers/testHelper";
 
 test.describe("Community Member Detail screen", () => {
+  let community: CommunityPage;
   const Jennifer: Member = memberDataJson.member.Jennifer.info;
-  test("Click member list and validate member status is correctly display", async ({
-    community,
-  }) => {
+
+  test.beforeEach(async ({ page }, testInfo) => {
+    // Initialize CommunityPage directly
+    community = new CommunityPage(page, !!testInfo.project.use.isMobile);
     await community.goto();
+  });
+
+  test("Click member list and validate member status is correctly displayed", async () => {
     const memberDetailPage = await community.clickMemberByText(Jennifer.name);
     await memberDetailPage.verifyMemberInfo(Jennifer);
   });
 
-  test("User landing on non-exist memer detail screen should see default message correctly", async ({
-    page,
-  }) => {
+  test("User landing on non-existent member detail screen should see default message correctly", async ({ page }) => {
     await verifyMemberPageErrorMessages(
       page,
       "123456789",
@@ -25,9 +28,7 @@ test.describe("Community Member Detail screen", () => {
     );
   });
 
-  test("Member detail screen should suppport dynamic error message from the back end correctly", async ({
-    page,
-  }) => {
+  test("Member detail screen should support dynamic error message from the back end correctly", async ({ page }) => {
     await verifyMemberPageErrorMessages(
       page,
       "987654321",

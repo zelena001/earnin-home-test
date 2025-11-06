@@ -22,7 +22,7 @@ jobs:
       - name: Prepare report folder
         run: mkdir -p ${{ github.workspace }}/playwright-report
 
-      - name: Run Playwright tests (limit to 1 worker)
+      - name: Run Playwright tests
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/playwright-report:/app/playwright-report \
