@@ -51,10 +51,10 @@ export function verifyAnalyticsEvent(event: any, expected: Record<string, string
  * @returns An array of captured analytics event objects.
  *          Each object represents a POST request to Segment's tracking API.
  */
-export async function captureSegmentEvents(page: Page): Promise<any[]> {
+export function captureSegmentEvents(page: Page) {
   const analyticsEvents: any[] = [];
 
-  page.on('request', async (req) => {
+  const listener = async (req: any) => {
     if (req.url().includes('https://api.segment.io/v1/t') && req.method() === 'POST') {
       try {
         const data = req.postDataJSON();
@@ -64,9 +64,14 @@ export async function captureSegmentEvents(page: Page): Promise<any[]> {
         console.warn('⚠️ Failed to parse Segment request', err);
       }
     }
-  });
+  };
 
-  return analyticsEvents;
+  page.on('request', listener);
+
+  return {
+    analyticsEvents,
+    cleanup: () => page.removeListener('request', listener), // remove the listener when done
+  };
 }
 
 /**
