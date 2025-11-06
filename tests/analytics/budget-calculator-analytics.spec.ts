@@ -5,50 +5,52 @@ import {
 } from "../../helpers/analyticsHelper";
 
 test.describe("Budget Calculator Analytics", () => {
-  test("should capture all relevant analytics events", async ({
-    calculator,
-    page,
-  }) => {
-    // Start capturing Segment analytics
-    const analyticsEvents = await captureSegmentEvents(page);
+  test("should capture all relevant analytics events", async ({ calculator, page }) => {
+    // Start capturing Segment analytics and get cleanup function
+    const { analyticsEvents, cleanup } = captureSegmentEvents(page);
 
-    // Step 1: Navigate to calculator page
-    await calculator.goto();
+    try {
+      // Step 1: Navigate to calculator page
+      await calculator.goto();
 
-    // Step 2: Open Budget Calculator
-    await calculator.clickBudgetCalculatorCard();
+      // Step 2: Open Budget Calculator
+      await calculator.clickBudgetCalculatorCard();
 
-    // Verify "User viewed screen" event
-    verifyAnalyticsEventTrigger(analyticsEvents, {
-      event: "User viewed screen",
-      "properties.screenName": "Budget Calculator",
-    });
+      // Verify "User viewed screen" event
+      verifyAnalyticsEventTrigger(analyticsEvents, {
+        event: "User viewed screen",
+        "properties.screenName": "Budget Calculator",
+      });
 
-    // Step 3: Fill income and verify analytics
-    await calculator.fillIncome("9000");
+      // Step 3: Fill income and verify analytics
+      await calculator.fillIncome("9000");
 
-    verifyAnalyticsEventTrigger(analyticsEvents, {
-      event: "User interacted with element",
-      "properties.elementName": "Income",
-      "properties.component": "Input Field",
-    });
+      verifyAnalyticsEventTrigger(analyticsEvents, {
+        event: "User interacted with element",
+        "properties.elementName": "Income",
+        "properties.component": "Input Field",
+      });
 
-    // Step 4: Fill Zip Code and verify analytics
-    await calculator.fillZipCode("94040");
+      // Step 4: Fill Zip Code and verify analytics
+      await calculator.fillZipCode("94040");
 
-    verifyAnalyticsEventTrigger(analyticsEvents, {
-      event: "User interacted with element",
-      "properties.elementName": "Zip Code",
-      "properties.component": "Input Field",
-    });
+      verifyAnalyticsEventTrigger(analyticsEvents, {
+        event: "User interacted with element",
+        "properties.elementName": "Zip Code",
+        "properties.component": "Input Field",
+      });
 
-    // Step 5: Click Calculate and verify analytics
-    await calculator.clickCalculate();
+      // Step 5: Click Calculate and verify analytics
+      await calculator.clickCalculate();
 
-    verifyAnalyticsEventTrigger(analyticsEvents, {
-      event: "User interacted with element",
-      "properties.elementName": "Calculate",
-      "properties.component": "CTA",
-    });
+      verifyAnalyticsEventTrigger(analyticsEvents, {
+        event: "User interacted with element",
+        "properties.elementName": "Calculate",
+        "properties.component": "CTA",
+      });
+    } finally {
+      // Always clean up the listener, even if the test fails
+      cleanup();
+    }
   });
 });
