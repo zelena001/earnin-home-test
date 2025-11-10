@@ -17,6 +17,8 @@ playwright-report/       # HTML reports
 *.png                    # screenshots
 *.mp4                    # videos
 *.json                   # sometimes test results are exported as JSON
+*.webm
+
 
 # TypeScript
 *.tsbuildinfo

@@ -40,7 +40,6 @@ test.describe("Community Member Lookup", () => {
     // explicit wait for flickering / small screen issues
     await page.waitForTimeout(1500);
     await community.datePicker.click();
-    page.pause();
     await community.selectFromDate("12/1/2024");
     await community.selectToDate("1/31/2025");
 
