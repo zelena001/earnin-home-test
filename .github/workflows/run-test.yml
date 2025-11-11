@@ -84,3 +84,4 @@ jobs:
           echo "✅ Playwright HTML report has been published!"
           echo "👉 https://zelena001.github.io/earnin-home-test/reports/${{ github.run_number }}/"
           echo ""
+          
