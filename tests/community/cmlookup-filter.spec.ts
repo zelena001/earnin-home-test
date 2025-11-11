@@ -1,8 +1,10 @@
 import { test } from "../../fixtures/communitiesFixture";
 import { verifyFilteredResult } from "../../helpers/testHelper";
+import memberDataJson from "../../testdata/memberData.json";
+import { Member } from "../../interfaces/communityMember";
 
 test.describe("Community Member Lookup", () => {
-
+  const Jennifer: Member = memberDataJson.member.Jennifer.info;
   test("filters by Active account status", async ({ community }) => {
     await community.goto();
     const matchedCount = await community.getStatusFilteredMembersCount("Active");
@@ -19,15 +21,15 @@ test.describe("Community Member Lookup", () => {
 
   test("filters by Member Name", async ({ community }) => {
     await community.goto();
-    const matchedCount = await community.getMemberCountByText("Jennifer Brown");
-    await community.searchByText("Jennifer Brown");
+    const matchedCount = await community.getMemberCountByText(Jennifer.name);
+    await community.searchByText(Jennifer.name);
     await verifyFilteredResult(community, matchedCount);
   });
 
   test("filters by Member Email", async ({ community }) => {
     await community.goto();
-    const matchedCount = await community.getMemberCountByText("jennifer.brown@example.com");
-    await community.searchByText("jennifer.brown@example.com");
+    const matchedCount = await community.getMemberCountByText(Jennifer.email);
+    await community.searchByText(Jennifer.email);
     await verifyFilteredResult(community, matchedCount);
   });
 
